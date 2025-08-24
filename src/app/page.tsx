@@ -8,6 +8,7 @@ export default function ABImageGenerator() {
   const [bgColor, setBgColor] = useState("#f8fafc");
   const [labelFont, setLabelFont] = useState("Inter");
   const [borderRadius, setBorderRadius] = useState(24);
+  const [generated, setGenerated] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleUpload = (
@@ -17,7 +18,11 @@ export default function ABImageGenerator() {
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      side === "left" ? setLeftImage(url) : setRightImage(url);
+      if (side === "left") {
+        setLeftImage(url);
+      } else {
+        setRightImage(url);
+      }
     }
   };
 
@@ -82,7 +87,7 @@ export default function ABImageGenerator() {
     ctx.closePath();
     ctx.clip();
 
-    // Fill only the clipped area with gray
+    // Fill only the clipped area with neutral
     ctx.fillStyle = BG_COLOR;
     ctx.fillRect(0, 0, totalWidth, totalHeight);
 
@@ -117,6 +122,7 @@ export default function ABImageGenerator() {
     );
 
     ctx.restore();
+    setGenerated(true);
   };
 
   const downloadImage = () => {
@@ -140,183 +146,128 @@ export default function ABImageGenerator() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent mb-4">
+        <header className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-200">
             A/B Test Image Generator
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">
-            Create professional A/B test comparison images with customizable
-            styling
-          </p>
-        </div>
+        </header>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Controls Panel */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-6 text-slate-900 dark:text-slate-100">
+        <main className="flex flex-col gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Col 1: Upload Images */}
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5">
+              <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
                 Upload Images
               </h2>
-
-              {/* Image Upload Cards */}
-              <div className="space-y-4">
-                <div className="relative">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Version A
-                  </label>
-                  <div className="relative border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 hover:border-slate-400 dark:hover:border-slate-600 transition-colors cursor-pointer group">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleUpload(e, "left")}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    {leftImage ? (
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-green-600 dark:text-green-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { side: "left", label: "Version A", image: leftImage },
+                  { side: "right", label: "Version B", image: rightImage },
+                ].map(({ side, label, image }) => (
+                  <div key={side} className="col-span-1">
+                    <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                      {label}
+                    </label>
+                    <div className="relative border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer group flex items-center justify-center h-24">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          handleUpload(e, side as "left" | "right")
+                        }
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      {image ? (
+                        <div className="flex flex-col items-center justify-center text-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-green-600 dark:text-green-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">
+                            Image loaded
+                          </span>
                         </div>
-                        <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
-                          Image A uploaded
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-slate-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
-                          </svg>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-neutral-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              />
+                            </svg>
+                          </div>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                            Click to upload
+                          </p>
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Click to upload Version A
-                        </p>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-
-                <div className="relative">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Version B
-                  </label>
-                  <div className="relative border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 hover:border-slate-400 dark:hover:border-slate-600 transition-colors cursor-pointer group">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleUpload(e, "right")}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    {rightImage ? (
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-green-600 dark:text-green-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        </div>
-                        <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
-                          Image B uploaded
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-slate-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
-                          </svg>
-                        </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Click to upload Version B
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Customization Panel */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-6 text-slate-900 dark:text-slate-100">
-                Customization
+            {/* Col 2: Customization */}
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5">
+              <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
+                Customise
               </h2>
-
-              <div className="space-y-6">
-                {/* Background Color */}
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
                     Background Color
                   </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={bgColor}
-                      onChange={(e) => setBgColor(e.target.value)}
-                      className="w-12 h-12 rounded-lg border border-slate-300 dark:border-slate-600 cursor-pointer"
-                    />
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-10 h-10">
+                      <input
+                        type="color"
+                        value={bgColor}
+                        onChange={(e) => setBgColor(e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div
+                        className="w-10 h-10 rounded-lg border border-neutral-300 dark:border-neutral-700"
+                        style={{ backgroundColor: bgColor }}
+                      />
+                    </div>
                     <input
                       type="text"
                       value={bgColor}
                       onChange={(e) => setBgColor(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm font-mono"
+                      className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                       placeholder="#f8fafc"
                     />
                   </div>
                 </div>
-
-                {/* Label Font */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
                     Label Font
                   </label>
                   <select
                     value={labelFont}
                     onChange={(e) => setLabelFont(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                   >
                     {fontOptions.map((font) => (
                       <option key={font} value={font}>
@@ -325,10 +276,8 @@ export default function ABImageGenerator() {
                     ))}
                   </select>
                 </div>
-
-                {/* Border Radius */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400">
                     Border Radius: {borderRadius}px
                   </label>
                   <input
@@ -337,56 +286,54 @@ export default function ABImageGenerator() {
                     max="50"
                     value={borderRadius}
                     onChange={(e) => setBorderRadius(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer slider"
                   />
-                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    <span>0px</span>
-                    <span>25px</span>
-                    <span>50px</span>
-                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col gap-3">
+            {/* Col 3: Actions */}
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5 flex flex-col justify-center gap-4">
               <button
                 onClick={generateImage}
                 disabled={!leftImage || !rightImage}
-                className="w-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 py-3 px-4 rounded-xl font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 text-white h-12 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-300 dark:disabled:bg-neutral-700 flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
               >
                 <svg
-                  className="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
+                  <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Generate Image
               </button>
 
               <button
                 onClick={downloadImage}
-                className="w-full bg-green-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                disabled={!generated}
+                className="w-full bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 h-12 px-4 rounded-lg font-semibold hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
               >
                 <svg
-                  className="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
                 Download
               </button>
@@ -394,49 +341,40 @@ export default function ABImageGenerator() {
           </div>
 
           {/* Preview Area */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-6 text-slate-900 dark:text-slate-100">
+          <div className="col-span-1 md:col-span-3">
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6">
+              <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
                 Preview
               </h2>
-
-              <div className="flex justify-center">
+              <div className="w-full bg-neutral-100 dark:bg-neutral-900/50 rounded-xl flex items-center justify-center p-8 min-h-[400px]">
                 <div
-                  className="relative bg-slate-50 dark:bg-slate-800 p-8 transition-all duration-200"
+                  className="relative transition-all duration-200"
                   style={{
                     borderRadius: `${borderRadius}px`,
-                    border: `2px dashed ${
-                      borderRadius > 0 ? "#e2e8f0" : "transparent"
-                    }`,
                   }}
                 >
                   <canvas
                     ref={canvasRef}
-                    className="max-w-full h-auto shadow-xl"
+                    className="max-w-full h-auto shadow-2xl shadow-neutral-400/20 dark:shadow-black/20"
                     style={{ borderRadius: `${borderRadius}px` }}
                   />
                   {!leftImage || !rightImage ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
                           <svg
-                            className="w-8 h-8 text-slate-500"
+                            className="w-8 h-8 text-neutral-500"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
+                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
-                        <p className="text-slate-600 dark:text-slate-400 text-lg font-medium mb-2">
-                          Upload both images to see preview
+                        <p className="text-neutral-600 dark:text-neutral-400 text-lg font-medium mb-2">
+                          Upload both images to see a preview
                         </p>
-                        <p className="text-slate-500 dark:text-slate-500 text-sm">
+                        <p className="text-neutral-500 dark:text-neutral-500 text-sm">
                           Your A/B test comparison will appear here
                         </p>
                       </div>
@@ -446,7 +384,7 @@ export default function ABImageGenerator() {
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );
