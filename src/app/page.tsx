@@ -407,9 +407,6 @@ export default function ABImageGenerator() {
                         <p className="text-neutral-600 dark:text-neutral-400 text-lg font-medium mb-2">
                           Upload both images to see a preview
                         </p>
-                        <p className="text-neutral-500 dark:text-neutral-500 text-sm">
-                          Your A/B test comparison will appear here
-                        </p>
                       </div>
                     </div>
                   ) : null}
