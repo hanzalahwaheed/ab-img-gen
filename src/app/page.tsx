@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 export default function ABImageGenerator() {
   const [leftImage, setLeftImage] = useState<string | null>(null);
@@ -11,20 +11,49 @@ export default function ABImageGenerator() {
   const [generated, setGenerated] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const handleImageFile = (file: File, side: "left" | "right") => {
+    const url = URL.createObjectURL(file);
+    if (side === "left") {
+      setLeftImage(url);
+    } else {
+      setRightImage(url);
+    }
+  };
+
   const handleUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     side: "left" | "right"
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      if (side === "left") {
-        setLeftImage(url);
-      } else {
-        setRightImage(url);
-      }
+      handleImageFile(file, side);
     }
   };
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf("image") !== -1) {
+          const file = items[i].getAsFile();
+          if (file) {
+            // If left image is empty, paste there. Otherwise, paste to right.
+            const side = !leftImage ? "left" : "right";
+            handleImageFile(file, side);
+            break; // Handle only the first image
+          }
+        }
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [leftImage, rightImage]); // Rerun if images change to correctly determine side
 
   const generateImage = async () => {
     if (!leftImage || !rightImage || !canvasRef.current) return;
@@ -161,6 +190,10 @@ export default function ABImageGenerator() {
               <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
                 Upload Images
               </h2>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 -mt-2">
+                Click each box to upload, or simply paste an image from your
+                clipboard. It will be placed in the first available slot.
+              </p>
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { side: "left", label: "Version A", image: leftImage },
@@ -218,7 +251,7 @@ export default function ABImageGenerator() {
                             </svg>
                           </div>
                           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                            Click to upload
+                            Click or paste to upload
                           </p>
                         </div>
                       )}
