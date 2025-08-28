@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# A/B Img Gen
 
-## Getting Started
+A simple, fast tool to create side-by-side comparison images for social media polls and design feedback. Upload two screenshots (Version A and Version B) and instantly generate a clean, labeled image ready for sharing.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Effortless Upload: Drag, click, or paste screenshots directly from your clipboard.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Customizable Labels: Automatically tags your designs as A and B with clean typography (Inter, System UI, SF Pro, and more).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Preserves Quality: Images maintain their original aspect ratio and crispness.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Instant Preview: See exactly how your comparison post will look before you download.
 
-## Learn More
+- One-Click Download: Get your ready-to-post image for immediate use.
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 How It Works
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+A/B Img Gen makes it frictionless to get feedback. Instead of manual editing, simply upload your two UI designs, and the tool will handle the rest, generating a perfectly aligned and labeled comparison image in seconds.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+It's the perfect tool for designers, developers, and product managers who want to spark engagement and get fast, shareable comparisons.
 
-## Deploy on Vercel
+## ❓ Example Use Case
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Use A/B Img Gen to ask your followers:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> 👉 "Which UI looks better, A or B?"
