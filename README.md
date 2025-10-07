@@ -61,19 +61,12 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine (ver
     yarn install
     ```
 
-4.  **Create environment file (Optional but often needed):**
-    If the project uses environment variables (like API keys), you may need to create a file named `.env.local` based on a provided template (e.g., `.env.example`). Check the project files for an example. If one exists, you would run:
-    ```bash
-    cp .env.example .env.local
-    # Then, open .env.local and fill in any required keys.
-    ```
-
-5.  **Run the development server:**
+6.  **Run the development server:**
     ```bash
     npm run dev
     # or
     yarn dev
     ```
 
-6.  **Access the application:**
+7.  **Access the application:**
     Open your web browser and visit `http://localhost:3000` (or whatever port the console indicates) to see the application running.
