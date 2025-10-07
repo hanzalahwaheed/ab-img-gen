@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function ABImageGenerator() {
   const [leftImage, setLeftImage] = useState<string | null>(null);
@@ -9,7 +10,12 @@ export default function ABImageGenerator() {
   const [labelFont, setLabelFont] = useState("Inter");
   const [borderRadius, setBorderRadius] = useState(24);
   const [generated, setGenerated] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleImageFile = (file: File, side: "left" | "right") => {
     const url = URL.createObjectURL(file);
@@ -174,13 +180,39 @@ export default function ABImageGenerator() {
     "Monaco",
   ];
 
+  // Don't render the ThemeToggle until mounted to prevent hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+        <div className="container mx-auto px-4 py-8">
+          <header className="flex items-center justify-between mb-10">
+            <div className="flex-1 text-center">
+              <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-200">
+                A/B Test Image Generator
+              </h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-9 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900" />
+            </div>
+          </header>
+          {/* Rest of the content */}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <div className="container mx-auto px-4 py-8">
-        <header className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-200">
-            A/B Test Image Generator
-          </h1>
+        <header className="flex items-center justify-between mb-10">
+          <div className="flex-1 text-center">
+            <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-200">
+              A/B Test Image Generator
+            </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+          </div>
         </header>
 
         <main className="flex flex-col gap-8">
@@ -343,7 +375,7 @@ export default function ABImageGenerator() {
               <button
                 onClick={generateImage}
                 disabled={!leftImage || !rightImage}
-                className="w-full bg-blue-600 text-white h-12 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-300 dark:disabled:bg-neutral-700 flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                className="w-full bg-blue-600 text-white h-12 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-300 dark:disabled:bg-black flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -364,7 +396,7 @@ export default function ABImageGenerator() {
               <button
                 onClick={downloadImage}
                 disabled={!generated}
-                className="w-full bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 h-12 px-4 rounded-lg font-semibold hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                className="w-full bg-neutral-200 dark:bg-black text-white dark:text-neutral-200 h-12 px-4 rounded-lg font-semibold hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -414,7 +446,7 @@ export default function ABImageGenerator() {
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
                         <p className="text-neutral-600 dark:text-neutral-400 text-lg font-medium mb-2">
