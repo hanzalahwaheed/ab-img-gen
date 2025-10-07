@@ -31,3 +31,49 @@ It's the perfect tool for designers, developers, and product managers who want t
 Use A/B Img Gen to ask your followers:
 
 > 👉 "Which UI looks better, A or B?"
+## 🚀 Local Development Setup
+
+To get a copy of the project up and running on your local machine, follow these steps.
+
+### Prerequisites
+
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine (version 16 or higher is generally recommended for Next.js).
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/hanzalahwaheed/ab-img-gen.git](https://github.com/hanzalahwaheed/ab-img-gen.git)
+    ```
+
+2.  **Navigate to the project directory:**
+    ```bash
+    cd ab-img-gen
+    ```
+
+3.  **Install dependencies:**
+    *(If using npm)*
+    ```bash
+    npm install
+    ```
+    *(If using yarn)*
+    ```bash
+    yarn install
+    ```
+
+4.  **Create environment file (Optional but often needed):**
+    If the project uses environment variables (like API keys), you may need to create a file named `.env.local` based on a provided template (e.g., `.env.example`). Check the project files for an example. If one exists, you would run:
+    ```bash
+    cp .env.example .env.local
+    # Then, open .env.local and fill in any required keys.
+    ```
+
+5.  **Run the development server:**
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+
+6.  **Access the application:**
+    Open your web browser and visit `http://localhost:3000` (or whatever port the console indicates) to see the application running.
