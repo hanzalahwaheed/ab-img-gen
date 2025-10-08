@@ -10,11 +10,20 @@ interface GradientStop {
 export default function ABImageGenerator() {
   const [leftImage, setLeftImage] = useState<string | null>(null);
   const [rightImage, setRightImage] = useState<string | null>(null);
+  
+  // Background type state
+  const [backgroundType, setBackgroundType] = useState<'solid' | 'gradient'>('gradient');
+  
+  // Solid color state
+  const [solidColor, setSolidColor] = useState('#f8fafc');
+  
+  // Gradient states
   const [gradientStops, setGradientStops] = useState<GradientStop[]>([
     { color: '#f8fafc', position: 0 },
     { color: '#e2e8f0', position: 100 }
   ]);
   const [gradientAngle, setGradientAngle] = useState(90);
+  
   const [labelFont, setLabelFont] = useState("Inter");
   const [borderRadius, setBorderRadius] = useState(24);
   const [generated, setGenerated] = useState(false);
@@ -150,26 +159,33 @@ export default function ABImageGenerator() {
     ctx.closePath();
     ctx.clip();
 
-    // Create and apply gradient background
-    const radians = (gradientAngle - 90) * (Math.PI / 180);
-    const centerX = totalWidth / 2;
-    const centerY = totalHeight / 2;
-    
-    const diagonal = Math.sqrt(totalWidth * totalWidth + totalHeight * totalHeight);
-    const x1 = centerX - Math.cos(radians) * diagonal / 2;
-    const y1 = centerY - Math.sin(radians) * diagonal / 2;
-    const x2 = centerX + Math.cos(radians) * diagonal / 2;
-    const y2 = centerY + Math.sin(radians) * diagonal / 2;
+    // Apply background based on type
+    if (backgroundType === 'solid') {
+      // Solid color background
+      ctx.fillStyle = solidColor;
+      ctx.fillRect(0, 0, totalWidth, totalHeight);
+    } else {
+      // Gradient background
+      const radians = (gradientAngle - 90) * (Math.PI / 180);
+      const centerX = totalWidth / 2;
+      const centerY = totalHeight / 2;
+      
+      const diagonal = Math.sqrt(totalWidth * totalWidth + totalHeight * totalHeight);
+      const x1 = centerX - Math.cos(radians) * diagonal / 2;
+      const y1 = centerY - Math.sin(radians) * diagonal / 2;
+      const x2 = centerX + Math.cos(radians) * diagonal / 2;
+      const y2 = centerY + Math.sin(radians) * diagonal / 2;
 
-    const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-    
-    const sortedStops = [...gradientStops].sort((a, b) => a.position - b.position);
-    sortedStops.forEach(stop => {
-      gradient.addColorStop(stop.position / 100, stop.color);
-    });
+      const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+      
+      const sortedStops = [...gradientStops].sort((a, b) => a.position - b.position);
+      sortedStops.forEach(stop => {
+        gradient.addColorStop(stop.position / 100, stop.color);
+      });
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, totalWidth, totalHeight);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, totalWidth, totalHeight);
+    }
 
     // Draw images
     const offsetAY = PADDING + (contentHeight - newHeightA) / 2;
@@ -318,70 +334,131 @@ export default function ABImageGenerator() {
                 Customise
               </h2>
               <div className="space-y-4">
-                {/* Gradient Background */}
+                {/* Background Type Toggle */}
                 <div>
                   <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
-                    Background Gradient
+                    Background Type
                   </label>
-                  
-                  {/* Gradient Angle */}
-                  <div className="flex items-center space-x-2 mb-3">
-                    <span className="text-xs text-neutral-500">Angle:</span>
-                    <input
-                      type="range"
-                      min="0"
-                      max="360"
-                      value={gradientAngle}
-                      onChange={(e) => setGradientAngle(Number(e.target.value))}
-                      className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500"
-                    />
-                    <span className="text-xs text-neutral-500 w-8">{gradientAngle}°</span>
+                  <div className="flex bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
+                    <button
+                      onClick={() => setBackgroundType('solid')}
+                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        backgroundType === 'solid'
+                          ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
+                      }`}
+                    >
+                      Solid Color
+                    </button>
+                    <button
+                      onClick={() => setBackgroundType('gradient')}
+                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        backgroundType === 'gradient'
+                          ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
+                      }`}
+                    >
+                      Gradient
+                    </button>
                   </div>
+                </div>
 
-                  {/* Gradient Preview */}
-                  <div 
-                    className="w-full h-8 rounded-md border border-neutral-300 dark:border-neutral-700 mb-3"
-                    style={{ background: generateGradientString() }}
-                  />
-
-                  {/* Color Stops */}
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {gradientStops.map((stop, index) => (
-                      <div key={index} className="flex items-center space-x-2">
+                {/* Solid Color Controls */}
+                {backgroundType === 'solid' && (
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                      Background Color
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative w-10 h-10">
                         <input
                           type="color"
-                          value={stop.color}
-                          onChange={(e) => updateGradientStop(index, 'color', e.target.value)}
-                          className="w-8 h-8 border-none cursor-pointer rounded"
+                          value={solidColor}
+                          onChange={(e) => setSolidColor(e.target.value)}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         />
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          value={stop.position}
-                          onChange={(e) => updateGradientStop(index, 'position', Number(e.target.value))}
-                          className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500"
+                        <div
+                          className="w-10 h-10 rounded-lg border border-neutral-300 dark:border-neutral-700"
+                          style={{ backgroundColor: solidColor }}
                         />
-                        <span className="text-xs w-8 text-neutral-500">{stop.position}%</span>
-                        {gradientStops.length > 2 && (
-                          <button
-                            onClick={() => removeGradientStop(index)}
-                            className="w-6 h-6 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded flex items-center justify-center"
-                          >
-                            ×
-                          </button>
-                        )}
                       </div>
-                    ))}
+                      <input
+                        type="text"
+                        value={solidColor}
+                        onChange={(e) => setSolidColor(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        placeholder="#f8fafc"
+                      />
+                    </div>
                   </div>
+                )}
 
-                  <button
-                    onClick={addGradientStop}
-                    className="w-full mt-2 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded text-sm hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
-                  >
-                    Add Color Stop
-                  </button>
-                </div>
+                {/* Gradient Controls */}
+                {backgroundType === 'gradient' && (
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                      Background Gradient
+                    </label>
+                    
+                    {/* Gradient Angle */}
+                    <div className="flex items-center space-x-2 mb-3">
+                      <span className="text-xs text-neutral-500">Angle:</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="360"
+                        value={gradientAngle}
+                        onChange={(e) => setGradientAngle(Number(e.target.value))}
+                        className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500"
+                      />
+                      <span className="text-xs text-neutral-500 w-8">{gradientAngle}°</span>
+                    </div>
+
+                    {/* Gradient Preview */}
+                    <div 
+                      className="w-full h-8 rounded-md border border-neutral-300 dark:border-neutral-700 mb-3"
+                      style={{ background: generateGradientString() }}
+                    />
+
+                    {/* Color Stops */}
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {gradientStops.map((stop, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={stop.color}
+                            onChange={(e) => updateGradientStop(index, 'color', e.target.value)}
+                            className="w-8 h-8 border-none cursor-pointer rounded"
+                          />
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={stop.position}
+                            onChange={(e) => updateGradientStop(index, 'position', Number(e.target.value))}
+                            className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500"
+                          />
+                          <span className="text-xs w-8 text-neutral-500">{stop.position}%</span>
+                          {gradientStops.length > 2 && (
+                            <button
+                              onClick={() => removeGradientStop(index)}
+                              className="w-6 h-6 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded flex items-center justify-center"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={addGradientStop}
+                      className="w-full mt-2 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded text-sm hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
+                    >
+                      Add Color Stop
+                    </button>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
@@ -491,7 +568,7 @@ export default function ABImageGenerator() {
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 0 00-2 2v12a2 2 0 002 2z" />
+                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
                         <p className="text-neutral-600 dark:text-neutral-400 text-lg font-medium mb-2">
