@@ -49,6 +49,14 @@ export default function ABImageGenerator() {
     }
   };
 
+  const handleRemove = (side: "left" | "right") => {
+    if (side === "left") {
+      setLeftImage(null);
+    } else {
+      setRightImage(null);
+    }
+  };
+
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
       const items = event.clipboardData?.items;
@@ -239,45 +247,75 @@ export default function ABImageGenerator() {
               <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 -mt-2">
                 Click each box to upload, or simply paste an image from your clipboard.
               </p>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { side: "left", label: "Version A", image: leftImage },
-                  { side: "right", label: "Version B", image: rightImage },
-                ].map(({ side, label, image }) => (
-                  <div key={side} className="col-span-1">
-                    <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
-                      {label}
-                    </label>
-                    <div className="relative border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer group flex items-center justify-center h-24">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleUpload(e, side as "left" | "right")}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      />
-                      {image ? (
-                        <div className="flex flex-col items-center justify-center text-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                            <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                          <span className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Image loaded</span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center text-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-                            <svg className="w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                          </div>
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400">Click or paste</p>
-                        </div>
-                      )}
-                    </div>
+             <div className="grid grid-cols-2 gap-4">
+              {[
+                { side: "left", label: "Version A", image: leftImage },
+                { side: "right", label: "Version B", image: rightImage },
+              ].map(({ side, label, image }) => (
+                <div key={side} className="col-span-1">
+                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    {label}
+                  </label>
+
+                <div className="relative border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer group flex items-center justify-center h-40 overflow-hidden">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleUpload(e, side as "left" | "right")}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-0"
+              />
+              
+              {image ? (
+                <>
+                  {/* Image preview */}
+                  <img
+                    src={image}
+                    alt={`${label} preview`}
+                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                  />
+
+                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs text-white font-medium">Change Image</span>
                   </div>
-                ))}
-              </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(side as "left" | "right");
+                    }}
+                    className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-black/80 transition z-20 cursor-pointer"
+                  >
+                    ×
+                  </button>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-neutral-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Click or paste
+                  </p>
+                </div>
+              )}
+            </div>
+
+                </div>
+              ))}
+            </div>
+
             </div>
 
             <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5 transition-colors">
