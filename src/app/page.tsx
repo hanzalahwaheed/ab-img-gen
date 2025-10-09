@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface GradientStop {
   color: string;
@@ -27,52 +28,7 @@ export default function ABImageGenerator() {
   const [labelFont, setLabelFont] = useState("Inter");
   const [borderRadius, setBorderRadius] = useState(24);
   const [generated, setGenerated] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
-  const [mounted, setMounted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Mark component as mounted
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Handle theme changes
-  useEffect(() => {
-    if (!mounted) return;
-
-    const root = document.documentElement;
-    
-    const applyTheme = (currentTheme: "light" | "dark" | "system") => {
-      let effectiveTheme: "light" | "dark" = "light";
-      
-      if (currentTheme === "system") {
-        effectiveTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      } else {
-        effectiveTheme = currentTheme;
-      }
-      
-      console.log("Applying theme:", currentTheme, "->", effectiveTheme); // Debug log
-      
-      if (effectiveTheme === "dark") {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    };
-    
-    applyTheme(theme);
-    
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = () => {
-      if (theme === "system") {
-        applyTheme("system");
-      }
-    };
-    
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme, mounted]);
 
   const handleImageFile = (file: File, side: "left" | "right") => {
     const url = URL.createObjectURL(file);
@@ -126,7 +82,7 @@ export default function ABImageGenerator() {
 
   const addGradientStop = () => {
     const newPosition = Math.floor(Math.random() * 100);
-    const newStops = [...gradientStops, { color: '#000000', position: newPosition }];
+    const newStops = [...gradientStops, { color: '#808080', position: newPosition }];
     setGradientStops(newStops);
   };
 
@@ -166,6 +122,7 @@ export default function ABImageGenerator() {
     const PADDING = 40;
     const LABEL_STRIP_HEIGHT = 100;
     const BORDER_RADIUS = borderRadius;
+    
     const scaleA = Math.min(1, MAX_HEIGHT / imgA.height);
     const scaleB = Math.min(1, MAX_HEIGHT / imgB.height);
 
@@ -196,12 +153,8 @@ export default function ABImageGenerator() {
     ctx.closePath();
     ctx.clip();
 
-    ctx.fillStyle = BG_COLOR;
-    ctx.fillRect(0, 0, totalWidth, totalHeight);
-
     // Apply background based on type
     if (backgroundType === 'solid') {
-      // Solid color background
       ctx.fillStyle = solidColor;
       ctx.fillRect(0, 0, totalWidth, totalHeight);
     } else {
@@ -273,71 +226,7 @@ export default function ABImageGenerator() {
             A/B Test Image Generator
           </h1>
           <div className="absolute top-0 right-0">
-            <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-1 shadow-sm">
-              <button
-                onClick={() => {
-                  console.log("Setting theme to light");
-                  setTheme("light");
-                }}
-                className={`p-2 rounded-md transition-all ${
-                  theme === "light"
-                    ? "bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
-                    : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                }`}
-                title="Light mode"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="4" />
-                  <path d="M12 2v2" />
-                  <path d="M12 20v2" />
-                  <path d="m4.93 4.93 1.41 1.41" />
-                  <path d="m17.66 17.66 1.41 1.41" />
-                  <path d="M2 12h2" />
-                  <path d="M20 12h2" />
-                  <path d="m6.34 17.66-1.41 1.41" />
-                  <path d="m19.07 4.93-1.41 1.41" />
-                </svg>
-              </button>
-
-              <button
-                onClick={() => {
-                  console.log("Setting theme to system");
-                  setTheme("system");
-                }}
-                className={`p-2 rounded-md transition-all ${
-                  theme === "system"
-                    ? "bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
-                    : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                }`}
-                title="System preference"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2" />
-                  <path d="M8 21h8" />
-                  <path d="M12 17v4" />
-                </svg>
-              </button>
-
-              <button
-                onClick={() => {
-                  console.log("Setting theme to dark");
-                  setTheme("dark");
-                }}
-                className={`p-2 rounded-md transition-all ${
-                  theme === "dark"
-                    ? "bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
-                    : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                }`}
-                title="Dark mode"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                </svg>
-              </button>
-            </div>
+            <ThemeToggle />
           </div>
         </header>
 
@@ -396,25 +285,12 @@ export default function ABImageGenerator() {
               <div className="space-y-4">
                 {/* Background Type Toggle */}
                 <div>
-
-                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">Background Color</label>
-                  <div className="flex items-center gap-2">
-                    <div className="relative w-10 h-10">
-                      <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                      <div className="w-10 h-10 rounded-lg border border-neutral-300 dark:border-neutral-700" style={{ backgroundColor: bgColor }} />
-                    </div>
-                    <input
-                      type="text"
-                      value={bgColor}
-                      onChange={(e) => setBgColor(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm font-mono focus:ring-2 focus:ring-blue-500 transition"
-                      placeholder="#f8fafc"
-
                   <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
                     Background Type
                   </label>
                   <div className="flex bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
                     <button
+                      type="button"
                       onClick={() => setBackgroundType('solid')}
                       className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         backgroundType === 'solid'
@@ -425,6 +301,7 @@ export default function ABImageGenerator() {
                       Solid Color
                     </button>
                     <button
+                      type="button"
                       onClick={() => setBackgroundType('gradient')}
                       className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         backgroundType === 'gradient'
@@ -469,54 +346,62 @@ export default function ABImageGenerator() {
 
                 {/* Gradient Controls */}
                 {backgroundType === 'gradient' && (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400">
                       Background Gradient
                     </label>
                     
                     {/* Gradient Angle */}
-                    <div className="flex items-center space-x-2 mb-3">
-                      <span className="text-xs text-neutral-500">Angle:</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400 w-12">Angle:</span>
                       <input
                         type="range"
                         min="0"
                         max="360"
                         value={gradientAngle}
                         onChange={(e) => setGradientAngle(Number(e.target.value))}
-                        className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500"
+                        className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500 [&::-webkit-slider-thumb]:cursor-pointer"
                       />
-                      <span className="text-xs text-neutral-500 w-8">{gradientAngle}°</span>
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400 w-10 text-right">{gradientAngle}°</span>
                     </div>
 
                     {/* Gradient Preview */}
                     <div 
-                      className="w-full h-8 rounded-md border border-neutral-300 dark:border-neutral-700 mb-3"
+                      className="w-full h-10 rounded-md border border-neutral-300 dark:border-neutral-700"
                       style={{ background: generateGradientString() }}
                     />
 
                     {/* Color Stops */}
-                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                       {gradientStops.map((stop, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <input
-                            type="color"
-                            value={stop.color}
-                            onChange={(e) => updateGradientStop(index, 'color', e.target.value)}
-                            className="w-8 h-8 border-none cursor-pointer rounded"
-                          />
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="relative w-8 h-8">
+                            <input
+                              type="color"
+                              value={stop.color}
+                              onChange={(e) => updateGradientStop(index, 'color', e.target.value)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div 
+                              className="w-8 h-8 rounded border border-neutral-300 dark:border-neutral-600"
+                              style={{ backgroundColor: stop.color }}
+                            />
+                          </div>
                           <input
                             type="range"
                             min="0"
                             max="100"
                             value={stop.position}
                             onChange={(e) => updateGradientStop(index, 'position', Number(e.target.value))}
-                            className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500"
+                            className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500 [&::-webkit-slider-thumb]:cursor-pointer"
                           />
-                          <span className="text-xs w-8 text-neutral-500">{stop.position}%</span>
+                          <span className="text-xs w-10 text-neutral-500 dark:text-neutral-400 text-right">{stop.position}%</span>
                           {gradientStops.length > 2 && (
                             <button
+                              type="button"
                               onClick={() => removeGradientStop(index)}
-                              className="w-6 h-6 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded flex items-center justify-center"
+                              className="w-7 h-7 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded flex items-center justify-center text-xl leading-none"
+                              title="Remove color stop"
                             >
                               ×
                             </button>
@@ -526,10 +411,11 @@ export default function ABImageGenerator() {
                     </div>
 
                     <button
+                      type="button"
                       onClick={addGradientStop}
-                      className="w-full mt-2 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded text-sm hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
+                      className="w-full px-3 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-md text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
                     >
-                      Add Color Stop
+                      + Add Color Stop
                     </button>
                   </div>
                 )}
@@ -542,6 +428,7 @@ export default function ABImageGenerator() {
                     ))}
                   </select>
                 </div>
+                
                 <div>
                   <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">Border Radius: {borderRadius}px</label>
                   <input
@@ -550,8 +437,6 @@ export default function ABImageGenerator() {
                     max="50"
                     value={borderRadius}
                     onChange={(e) => setBorderRadius(Number(e.target.value))}
-
-                    className="w-full h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-neutral-500"
                     className="w-full h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-neutral-500 [&::-moz-range-thumb]:cursor-pointer"
                   />
                 </div>
