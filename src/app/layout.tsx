@@ -16,12 +16,7 @@ export const metadata: Metadata = {
   title: "A/B Img Gen",
   description: "Generate A/B test images for your website",
   authors: [{ name: "Hanzalah Waheed" }],
-  keywords: [
-    "A/B testing",
-    "A/B test",
-    "A/B test images",
-    "A/B test generator",
-  ],
+  keywords: ["A/B testing", "A/B test", "A/B test images", "A/B test generator"],
 };
 
 export default function RootLayout({
@@ -30,10 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
