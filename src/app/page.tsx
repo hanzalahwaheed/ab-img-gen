@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
+import Image from "next/image";
 
 interface GradientStop {
   color: string;
@@ -11,20 +12,22 @@ interface GradientStop {
 export default function ABImageGenerator() {
   const [leftImage, setLeftImage] = useState<string | null>(null);
   const [rightImage, setRightImage] = useState<string | null>(null);
-  
+
   // Background type state
-  const [backgroundType, setBackgroundType] = useState<'solid' | 'gradient'>('gradient');
-  
+  const [backgroundType, setBackgroundType] = useState<"solid" | "gradient">(
+    "gradient",
+  );
+
   // Solid color state
-  const [solidColor, setSolidColor] = useState('#f8fafc');
-  
+  const [solidColor, setSolidColor] = useState("#f8fafc");
+
   // Gradient states
   const [gradientStops, setGradientStops] = useState<GradientStop[]>([
-    { color: '#f8fafc', position: 0 },
-    { color: '#e2e8f0', position: 100 }
+    { color: "#f8fafc", position: 0 },
+    { color: "#e2e8f0", position: 100 },
   ]);
   const [gradientAngle, setGradientAngle] = useState(90);
-  
+
   const [labelFont, setLabelFont] = useState("Inter");
   const [borderRadius, setBorderRadius] = useState(24);
   const [generated, setGenerated] = useState(false);
@@ -41,7 +44,7 @@ export default function ABImageGenerator() {
 
   const handleUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
-    side: "left" | "right"
+    side: "left" | "right",
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -81,16 +84,21 @@ export default function ABImageGenerator() {
   }, [leftImage, rightImage]);
 
   const generateGradientString = () => {
-    const sortedStops = [...gradientStops].sort((a, b) => a.position - b.position);
+    const sortedStops = [...gradientStops].sort(
+      (a, b) => a.position - b.position,
+    );
     const gradientStopsStr = sortedStops
-      .map(stop => `${stop.color} ${stop.position}%`)
-      .join(', ');
+      .map((stop) => `${stop.color} ${stop.position}%`)
+      .join(", ");
     return `linear-gradient(${gradientAngle}deg, ${gradientStopsStr})`;
   };
 
   const addGradientStop = () => {
     const newPosition = Math.floor(Math.random() * 100);
-    const newStops = [...gradientStops, { color: '#808080', position: newPosition }];
+    const newStops = [
+      ...gradientStops,
+      { color: "#808080", position: newPosition },
+    ];
     setGradientStops(newStops);
   };
 
@@ -101,9 +109,13 @@ export default function ABImageGenerator() {
     }
   };
 
-  const updateGradientStop = (index: number, field: 'color' | 'position', value: string | number) => {
-    const newStops = gradientStops.map((stop, i) => 
-      i === index ? { ...stop, [field]: value } : stop
+  const updateGradientStop = (
+    index: number,
+    field: "color" | "position",
+    value: string | number,
+  ) => {
+    const newStops = gradientStops.map((stop, i) =>
+      i === index ? { ...stop, [field]: value } : stop,
     );
     setGradientStops(newStops);
   };
@@ -130,7 +142,7 @@ export default function ABImageGenerator() {
     const PADDING = 40;
     const LABEL_STRIP_HEIGHT = 100;
     const BORDER_RADIUS = borderRadius;
-    
+
     const scaleA = Math.min(1, MAX_HEIGHT / imgA.height);
     const scaleB = Math.min(1, MAX_HEIGHT / imgB.height);
 
@@ -153,7 +165,12 @@ export default function ABImageGenerator() {
     ctx.lineTo(totalWidth - BORDER_RADIUS, 0);
     ctx.quadraticCurveTo(totalWidth, 0, totalWidth, BORDER_RADIUS);
     ctx.lineTo(totalWidth, totalHeight - BORDER_RADIUS);
-    ctx.quadraticCurveTo(totalWidth, totalHeight, totalWidth - BORDER_RADIUS, totalHeight);
+    ctx.quadraticCurveTo(
+      totalWidth,
+      totalHeight,
+      totalWidth - BORDER_RADIUS,
+      totalHeight,
+    );
     ctx.lineTo(BORDER_RADIUS, totalHeight);
     ctx.quadraticCurveTo(0, totalHeight, 0, totalHeight - BORDER_RADIUS);
     ctx.lineTo(0, BORDER_RADIUS);
@@ -162,7 +179,7 @@ export default function ABImageGenerator() {
     ctx.clip();
 
     // Apply background based on type
-    if (backgroundType === 'solid') {
+    if (backgroundType === "solid") {
       ctx.fillStyle = solidColor;
       ctx.fillRect(0, 0, totalWidth, totalHeight);
     } else {
@@ -170,17 +187,21 @@ export default function ABImageGenerator() {
       const radians = (gradientAngle - 90) * (Math.PI / 180);
       const centerX = totalWidth / 2;
       const centerY = totalHeight / 2;
-      
-      const diagonal = Math.sqrt(totalWidth * totalWidth + totalHeight * totalHeight);
-      const x1 = centerX - Math.cos(radians) * diagonal / 2;
-      const y1 = centerY - Math.sin(radians) * diagonal / 2;
-      const x2 = centerX + Math.cos(radians) * diagonal / 2;
-      const y2 = centerY + Math.sin(radians) * diagonal / 2;
+
+      const diagonal = Math.sqrt(
+        totalWidth * totalWidth + totalHeight * totalHeight,
+      );
+      const x1 = centerX - (Math.cos(radians) * diagonal) / 2;
+      const y1 = centerY - (Math.sin(radians) * diagonal) / 2;
+      const x2 = centerX + (Math.cos(radians) * diagonal) / 2;
+      const y2 = centerY + (Math.sin(radians) * diagonal) / 2;
 
       const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-      
-      const sortedStops = [...gradientStops].sort((a, b) => a.position - b.position);
-      sortedStops.forEach(stop => {
+
+      const sortedStops = [...gradientStops].sort(
+        (a, b) => a.position - b.position,
+      );
+      sortedStops.forEach((stop) => {
         gradient.addColorStop(stop.position / 100, stop.color);
       });
 
@@ -192,15 +213,29 @@ export default function ABImageGenerator() {
     const offsetBY = PADDING + (contentHeight - newHeightB) / 2;
 
     ctx.drawImage(imgA, PADDING, offsetAY, newWidthA, newHeightA);
-    ctx.drawImage(imgB, PADDING * 2 + newWidthA, offsetBY, newWidthB, newHeightB);
+    ctx.drawImage(
+      imgB,
+      PADDING * 2 + newWidthA,
+      offsetBY,
+      newWidthB,
+      newHeightB,
+    );
 
     ctx.fillStyle = "#000000";
     ctx.font = `bold 48px ${labelFont}, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    ctx.fillText("A", PADDING + newWidthA / 2, contentHeight + PADDING * 2 + LABEL_STRIP_HEIGHT / 2);
-    ctx.fillText("B", PADDING * 2 + newWidthA + newWidthB / 2, contentHeight + PADDING * 2 + LABEL_STRIP_HEIGHT / 2);
+    ctx.fillText(
+      "A",
+      PADDING + newWidthA / 2,
+      contentHeight + PADDING * 2 + LABEL_STRIP_HEIGHT / 2,
+    );
+    ctx.fillText(
+      "B",
+      PADDING * 2 + newWidthA + newWidthB / 2,
+      contentHeight + PADDING * 2 + LABEL_STRIP_HEIGHT / 2,
+    );
 
     ctx.restore();
     setGenerated(true);
@@ -245,81 +280,86 @@ export default function ABImageGenerator() {
                 Upload Images
               </h2>
               <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 -mt-2">
-                Click each box to upload, or simply paste an image from your clipboard.
+                Click each box to upload, or simply paste an image from your
+                clipboard.
               </p>
-             <div className="grid grid-cols-2 gap-4">
-              {[
-                { side: "left", label: "Version A", image: leftImage },
-                { side: "right", label: "Version B", image: rightImage },
-              ].map(({ side, label, image }) => (
-                <div key={side} className="col-span-1">
-                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
-                    {label}
-                  </label>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { side: "left", label: "Version A", image: leftImage },
+                  { side: "right", label: "Version B", image: rightImage },
+                ].map(({ side, label, image }) => (
+                  <div key={side} className="col-span-1">
+                    <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                      {label}
+                    </label>
 
-                <div className="relative border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer group flex items-center justify-center h-40 overflow-hidden">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleUpload(e, side as "left" | "right")}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-0"
-              />
-              
-              {image ? (
-                <>
-                  {/* Image preview */}
-                  <img
-                    src={image}
-                    alt={`${label} preview`}
-                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                  />
-
-                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-xs text-white font-medium">Change Image</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemove(side as "left" | "right");
-                    }}
-                    className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-black/80 transition z-20 cursor-pointer"
-                  >
-                    ×
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center text-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 text-neutral-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    <div className="relative border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer group flex items-center justify-center h-40 overflow-hidden">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          handleUpload(e, side as "left" | "right")
+                        }
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-0"
                       />
-                    </svg>
+
+                      {image ? (
+                        <>
+                          {/* Image preview */}
+                          <Image
+                            src={image}
+                            alt={`${label} preview`}
+                            className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                          />
+
+                          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-xs text-white font-medium">
+                              Change Image
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemove(side as "left" | "right");
+                            }}
+                            className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-black/80 transition z-20 cursor-pointer"
+                          >
+                            ×
+                          </button>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-neutral-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              />
+                            </svg>
+                          </div>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                            Click or paste
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Click or paste
-                  </p>
-                </div>
-              )}
-            </div>
-
-                </div>
-              ))}
-            </div>
-
+                ))}
+              </div>
             </div>
 
             <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5 transition-colors">
-              <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">Customise</h2>
+              <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
+                Customise
+              </h2>
               <div className="space-y-4">
                 {/* Background Type Toggle */}
                 <div>
@@ -329,23 +369,21 @@ export default function ABImageGenerator() {
                   <div className="flex bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
                     <button
                       type="button"
-                      onClick={() => setBackgroundType('solid')}
-                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        backgroundType === 'solid'
-                          ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
-                          : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
-                      }`}
+                      onClick={() => setBackgroundType("solid")}
+                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${backgroundType === "solid"
+                          ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm"
+                          : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
+                        }`}
                     >
                       Solid Color
                     </button>
                     <button
                       type="button"
-                      onClick={() => setBackgroundType('gradient')}
-                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        backgroundType === 'gradient'
-                          ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
-                          : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
-                      }`}
+                      onClick={() => setBackgroundType("gradient")}
+                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${backgroundType === "gradient"
+                          ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm"
+                          : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
+                        }`}
                     >
                       Gradient
                     </button>
@@ -353,7 +391,7 @@ export default function ABImageGenerator() {
                 </div>
 
                 {/* Solid Color Controls */}
-                {backgroundType === 'solid' && (
+                {backgroundType === "solid" && (
                   <div>
                     <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
                       Background Color
@@ -383,28 +421,34 @@ export default function ABImageGenerator() {
                 )}
 
                 {/* Gradient Controls */}
-                {backgroundType === 'gradient' && (
+                {backgroundType === "gradient" && (
                   <div className="space-y-3">
                     <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400">
                       Background Gradient
                     </label>
-                    
+
                     {/* Gradient Angle */}
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-neutral-500 dark:text-neutral-400 w-12">Angle:</span>
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400 w-12">
+                        Angle:
+                      </span>
                       <input
                         type="range"
                         min="0"
                         max="360"
                         value={gradientAngle}
-                        onChange={(e) => setGradientAngle(Number(e.target.value))}
+                        onChange={(e) =>
+                          setGradientAngle(Number(e.target.value))
+                        }
                         className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500 [&::-webkit-slider-thumb]:cursor-pointer"
                       />
-                      <span className="text-xs text-neutral-500 dark:text-neutral-400 w-10 text-right">{gradientAngle}°</span>
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400 w-10 text-right">
+                        {gradientAngle}°
+                      </span>
                     </div>
 
                     {/* Gradient Preview */}
-                    <div 
+                    <div
                       className="w-full h-10 rounded-md border border-neutral-300 dark:border-neutral-700"
                       style={{ background: generateGradientString() }}
                     />
@@ -417,10 +461,16 @@ export default function ABImageGenerator() {
                             <input
                               type="color"
                               value={stop.color}
-                              onChange={(e) => updateGradientStop(index, 'color', e.target.value)}
+                              onChange={(e) =>
+                                updateGradientStop(
+                                  index,
+                                  "color",
+                                  e.target.value,
+                                )
+                              }
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />
-                            <div 
+                            <div
                               className="w-8 h-8 rounded border border-neutral-300 dark:border-neutral-600"
                               style={{ backgroundColor: stop.color }}
                             />
@@ -430,10 +480,18 @@ export default function ABImageGenerator() {
                             min="0"
                             max="100"
                             value={stop.position}
-                            onChange={(e) => updateGradientStop(index, 'position', Number(e.target.value))}
+                            onChange={(e) =>
+                              updateGradientStop(
+                                index,
+                                "position",
+                                Number(e.target.value),
+                              )
+                            }
                             className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-500 [&::-webkit-slider-thumb]:cursor-pointer"
                           />
-                          <span className="text-xs w-10 text-neutral-500 dark:text-neutral-400 text-right">{stop.position}%</span>
+                          <span className="text-xs w-10 text-neutral-500 dark:text-neutral-400 text-right">
+                            {stop.position}%
+                          </span>
                           {gradientStops.length > 2 && (
                             <button
                               type="button"
@@ -459,16 +517,26 @@ export default function ABImageGenerator() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">Label Font</label>
-                  <select value={labelFont} onChange={(e) => setLabelFont(e.target.value)} className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-blue-500 transition">
+                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    Label Font
+                  </label>
+                  <select
+                    value={labelFont}
+                    onChange={(e) => setLabelFont(e.target.value)}
+                    className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-blue-500 transition"
+                  >
                     {fontOptions.map((font) => (
-                      <option key={font} value={font}>{font}</option>
+                      <option key={font} value={font}>
+                        {font}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">Border Radius: {borderRadius}px</label>
+                  <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    Border Radius: {borderRadius}px
+                  </label>
                   <input
                     type="range"
                     min="0"
@@ -488,7 +556,15 @@ export default function ABImageGenerator() {
                 className="w-full bg-blue-600 text-white h-12 px-4 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Generate Image
@@ -499,7 +575,15 @@ export default function ABImageGenerator() {
                 className="w-full bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 h-12 px-4 rounded-lg font-semibold hover:bg-neutral-300 dark:hover:bg-neutral-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
@@ -511,19 +595,35 @@ export default function ABImageGenerator() {
 
           <div className="col-span-1 md:col-span-3">
             <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
-              <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">Preview</h2>
+              <h2 className="text-lg font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
+                Preview
+              </h2>
               <div className="w-full bg-neutral-100 dark:bg-neutral-900/50 rounded-xl flex items-center justify-center p-8 min-h-[400px] transition-colors">
-                <div className="relative" style={{ borderRadius: `${borderRadius}px` }}>
-                  <canvas ref={canvasRef} className="max-w-full h-auto shadow-2xl" style={{ borderRadius: `${borderRadius}px` }} />
+                <div
+                  className="relative"
+                  style={{ borderRadius: `${borderRadius}px` }}
+                >
+                  <canvas
+                    ref={canvasRef}
+                    className="max-w-full h-auto shadow-2xl"
+                    style={{ borderRadius: `${borderRadius}px` }}
+                  />
                   {!leftImage || !rightImage ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
                         <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
-                          <svg className="w-8 h-8 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-8 h-8 text-neutral-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
-                        <p className="text-neutral-600 dark:text-neutral-400 text-lg font-medium">Upload both images to see a preview</p>
+                        <p className="text-neutral-600 dark:text-neutral-400 text-lg font-medium">
+                          Upload both images to see a preview
+                        </p>
                       </div>
                     </div>
                   ) : null}

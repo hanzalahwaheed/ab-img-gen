@@ -31,6 +31,7 @@ It's the perfect tool for designers, developers, and product managers who want t
 Use A/B Img Gen to ask your followers:
 
 > 👉 "Which UI looks better, A or B?"
+
 ## 🚀 Local Development Setup
 
 To get a copy of the project up and running on your local machine, follow these steps.
@@ -42,31 +43,37 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine (ver
 ### Installation
 
 1.  **Clone the repository:**
+
     ```bash
     git clone [https://github.com/hanzalahwaheed/ab-img-gen.git](https://github.com/hanzalahwaheed/ab-img-gen.git)
     ```
 
 2.  **Navigate to the project directory:**
+
     ```bash
     cd ab-img-gen
     ```
 
 3.  **Install dependencies:**
-    *(If using npm)*
+    _(If using npm)_
+
     ```bash
     npm install
     ```
-    *(If using yarn)*
+
+    _(If using yarn)_
+
     ```bash
     yarn install
     ```
 
-6.  **Run the development server:**
+4.  **Run the development server:**
+
     ```bash
     npm run dev
     # or
     yarn dev
     ```
 
-7.  **Access the application:**
+5.  **Access the application:**
     Open your web browser and visit `http://localhost:3000` (or whatever port the console indicates) to see the application running.
