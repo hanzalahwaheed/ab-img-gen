@@ -4,7 +4,7 @@ A simple, fast tool to create side-by-side comparison images for social media po
 
 ## Launch
 
-This project was first launched on Peerlist when I got the idea for it at midnight. It managed to reach in the **top 25** projects of the Week and gathered a total **40 upvotes**.
+This project was first launched on Peerlist when I got the idea for it at midnight. It managed to reach in the **top 30** projects of the Week and gathered **40+ upvotes**. Launch URL: https://peerlist.io/hanzalahwaheed/project/ab-img-gen
 
 <img width="1200" height="630" alt="A_B Img Gen" src="https://github.com/user-attachments/assets/eea6e757-55cc-4e1b-9477-afaab4ea1ae4" />
 
