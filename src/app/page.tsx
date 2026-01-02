@@ -8,6 +8,8 @@ import CustomizationSection, {
 } from "@/components/CustomizationSection";
 import PreviewSection from "@/components/PreviewSection";
 import ActionButtons from "@/components/ActionButtons";
+import { GithubIcon } from "lucide-react";
+import Link from "next/link";
 
 export default function ABImageGenerator() {
   const [leftImage, setLeftImage] = useState<string | null>(null);
@@ -216,12 +218,18 @@ export default function ABImageGenerator() {
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors duration-200">
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-10 relative">
+          <div className="absolute top-0 left-0">
+            <ThemeToggle />
+          </div>
           <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-200">
             A/B Test Image Generator
           </h1>
-          <div className="absolute top-0 right-0">
-            <ThemeToggle />
-          </div>
+          <Link
+            href={"https://github.com/hanzalahwaheed/ab-img-gen"}
+            target="_blank"
+          >
+            <GithubIcon className="absolute cursor-pointer top-0 right-0 mt-1" />
+          </Link>
         </header>
 
         <main className="flex flex-col gap-8">
@@ -232,7 +240,6 @@ export default function ABImageGenerator() {
               onUpload={handleUpload}
               onRemove={handleRemove}
             />
-
             <CustomizationSection
               backgroundType={backgroundType}
               setBackgroundType={setBackgroundType}
@@ -247,7 +254,6 @@ export default function ABImageGenerator() {
               borderRadius={borderRadius}
               setBorderRadius={setBorderRadius}
             />
-
             <ActionButtons
               onGenerate={generateImage}
               onDownload={downloadImage}
@@ -255,7 +261,6 @@ export default function ABImageGenerator() {
               canDownload={generated}
             />
           </div>
-
           <PreviewSection
             canvasRef={canvasRef}
             borderRadius={borderRadius}
