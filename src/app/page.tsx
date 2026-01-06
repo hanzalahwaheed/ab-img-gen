@@ -209,6 +209,7 @@ export default function ABImageGenerator() {
   const downloadImage = () => {
     if (!canvasRef.current) return;
     const link = document.createElement("a");
+    // TODO: Give a file rename option to user
     link.download = "ab-comparison.png";
     link.href = canvasRef.current.toDataURL("image/png");
     link.click();
