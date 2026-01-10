@@ -1,18 +1,18 @@
 import React from "react";
 
-interface ActionButtonProps {
+interface ButtonProps {
   onClick: () => void;
   disabled: boolean;
   variant: "primary" | "secondary";
   children: React.ReactNode;
 }
 
-export default function ActionButton({
+export default function Button({
   onClick,
   disabled,
   variant,
   children,
-}: ActionButtonProps) {
+}: ButtonProps) {
   const baseClasses =
     "w-full h-12 px-4 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm";
   const variantClasses =

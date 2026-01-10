@@ -1,5 +1,5 @@
 import React from "react";
-import ActionButton from "./ActionButton";
+import Button from "./Button";
 
 interface ActionButtonsProps {
   onGenerate: () => void;
@@ -16,11 +16,7 @@ export default function ActionButtons({
 }: ActionButtonsProps) {
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-5 flex flex-col justify-center gap-4 transition-colors">
-      <ActionButton
-        onClick={onGenerate}
-        disabled={!canGenerate}
-        variant="primary"
-      >
+      <Button onClick={onGenerate} disabled={!canGenerate} variant="primary">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -33,12 +29,8 @@ export default function ActionButtons({
           <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         Generate Image
-      </ActionButton>
-      <ActionButton
-        onClick={onDownload}
-        disabled={!canDownload}
-        variant="secondary"
-      >
+      </Button>
+      <Button onClick={onDownload} disabled={!canDownload} variant="secondary">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -53,7 +45,7 @@ export default function ActionButtons({
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
         Download
-      </ActionButton>
+      </Button>
     </div>
   );
 }
