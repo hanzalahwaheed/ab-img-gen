@@ -1,53 +1,48 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-type Theme = "light" | "dark" | "system";
+import { useEffect, useState } from "react";
+import {
+  applyTheme,
+  DEFAULT_THEME,
+  THEME_MEDIA_QUERY,
+  type Theme,
+  readStoredTheme,
+  writeStoredTheme,
+} from "@/lib/theme";
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>("system");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const storedTheme = readStoredTheme();
+    const initialTheme = storedTheme ?? DEFAULT_THEME;
+
+    setTheme(initialTheme);
+    applyTheme(initialTheme);
+    setIsReady(true);
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-
-    const root = document.documentElement;
-
-    const applyTheme = (currentTheme: Theme) => {
-      let effectiveTheme: "light" | "dark" = "light";
-
-      if (currentTheme === "system") {
-        effectiveTheme = window.matchMedia("(prefers-color-scheme: dark)")
-          .matches
-          ? "dark"
-          : "light";
-      } else {
-        effectiveTheme = currentTheme;
-      }
-
-      if (effectiveTheme === "dark") {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    };
+    if (!isReady) {
+      return;
+    }
 
     applyTheme(theme);
+    writeStoredTheme(theme);
+  }, [theme, isReady]);
 
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = () => {
-      if (theme === "system") {
-        applyTheme("system");
-      }
-    };
+  useEffect(() => {
+    if (!isReady || theme !== "system") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia(THEME_MEDIA_QUERY);
+    const handleChange = () => applyTheme("system");
 
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme, mounted]);
+  }, [theme, isReady]);
 
   return { theme, setTheme };
 }
